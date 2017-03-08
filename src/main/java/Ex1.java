@@ -1,14 +1,12 @@
-import com.sun.org.apache.regexp.internal.RE;
-import org.apache.commons.math3.linear.MatrixUtils;
-import org.apache.commons.math3.linear.RealMatrix;
-import org.apache.commons.math3.linear.RealVector;
+import models.InputLayer;
+import models.Layer;
+import models.OutputLayer;
+import org.la4j.Matrix;
+import org.la4j.vector.dense.BasicVector;
+import utils.FileUtils;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.Arrays;
-import java.util.Random;
 
 /**
  * Created by szale_000 on 2017-03-07.
@@ -16,72 +14,49 @@ import java.util.Random;
 public class Ex1 {
 
     public void doMagic() throws FileNotFoundException {
-        RealMatrix inputs = loadMatrix("transformation.txt");
-        int examples = inputs.getRowDimension();
+        Matrix inputs = FileUtils.loadMatrix("transformation.txt");
+        Matrix expectedResults = FileUtils.loadMatrix("transformation.txt");
+        int examples = inputs.rows();
+        boolean includeBias = true;
 
-        int inputSize = 4;
-        InputLayer inputLayer = new InputLayer(inputSize);
-
+        int inputSize = inputs.getRow(0).length();
         int hiddenSize = 2;
-        Layer hiddenLayer = new Layer(inputSize,hiddenSize);
+        int outputSize = expectedResults.getRow(0).length();
 
-        int outputSize = 4;
-        OutputLayer outputLayer = new OutputLayer(hiddenSize, outputSize);
+        InputLayer inputLayer = new InputLayer(inputSize, examples, includeBias);
+        Layer hiddenLayer = new Layer(inputSize + (includeBias ? 1 : 0), hiddenSize, examples, includeBias);
+        OutputLayer outputLayer = new OutputLayer(hiddenSize + (includeBias ? 1 : 0), outputSize, examples);
 
-        for (int it=0; it<5000; it++) {
+        for (int it = 0; it < 500; it++) {
             double cost = 0;
-            for (int i = 0; i < examples; i++) {
-                inputLayer.setInput(inputs.getRow(i));
-                hiddenLayer.forwardPropagate(inputLayer);
-                outputLayer.forwardPropagate(hiddenLayer);
+            inputLayer.setInput(inputs);
+            hiddenLayer.forwardPropagate(inputLayer);
+            outputLayer.forwardPropagate(hiddenLayer);
+            cost = outputLayer.cost(expectedResults);
 
-                RealVector expectedOutput = inputs.getRowVector(i);
-                outputLayer.calculateErrors(expectedOutput);
-                hiddenLayer.calculateErrors(outputLayer);
+            outputLayer.calculateErrors(expectedResults);
+            hiddenLayer.calculateErrors(outputLayer);
 
-                outputLayer.propagateBackward(hiddenLayer.activationValues);
-                hiddenLayer.propagateBackward(inputLayer.activationValues);
-                cost += outputLayer.cost(expectedOutput);
+            outputLayer.propagateBackward(hiddenLayer.getActivationValues());
+            hiddenLayer.propagateBackward(inputLayer.getActivationValues());
 
-
-            }
-            hiddenLayer.gradientDescent(examples);
-            outputLayer.gradientDescent(examples);
+            hiddenLayer.gradientDescent();
+            outputLayer.gradientDescent();
 
             if (it%50==0) {
                 System.out.println(it + ": " + cost / examples);
             }
-            hiddenLayer.clearExceptWeights();
-            outputLayer.clearExceptWeights();
         }
         System.out.println("\n\n================================\n\n");
         for (int i = 0; i < examples; i++) {
-            inputLayer.setInput(inputs.getRow(i));
+            //inputLayer.setInput(inputs.getRow(i));
             hiddenLayer.forwardPropagate(inputLayer);
             outputLayer.forwardPropagate(hiddenLayer);
 
-            System.out.println("input: "+Arrays.toString(inputs.getRow(i)));
-            System.out.println("output: "+Arrays.toString(outputLayer.getActivationValues().toArray()));
+            System.out.println("input: " + Arrays.toString(((BasicVector) inputs.getRow(i)).toArray()));
+            System.out.println("input: " + Arrays.toString(((BasicVector) expectedResults.getRow(i)).toArray()));
+            System.out.println("output: " + Arrays.toString(((BasicVector) outputLayer.getActivationValues().getRow(i)).toArray()) + "\n");
         }
-    }
-
-    private RealMatrix loadMatrix(String filename) throws FileNotFoundException {
-        File file = new File(filename);
-        FileReader fileReader = new FileReader(file);
-        BufferedReader bufferedReader = new BufferedReader(fileReader);
-
-        String[] lines = bufferedReader.lines().toArray(String[]::new);
-        int rows = lines.length;
-        int columns = lines[0].split(" ").length;
-
-        RealMatrix matrix = MatrixUtils.createRealMatrix(rows, columns);
-
-        for (int i = 0; i < rows; i++) {
-            double[] array = Arrays.stream(lines[i].split(" ")).mapToDouble(Double::parseDouble).toArray();
-            matrix.setRow(i, array);
-        }
-
-        return matrix;
     }
 
 }
