@@ -17,10 +17,6 @@ public class InputLayer extends Layer {
     }
 
     public void setInput(Matrix data) {
-        if (hasBias()) {
-            activationValues = MatrixUtils.addBiasColumn(data);
-        } else {
-            activationValues = data;
-        }
+        activationValues = hasBias() ? MatrixUtils.addBiasColumn(data) : data;
     }
 }

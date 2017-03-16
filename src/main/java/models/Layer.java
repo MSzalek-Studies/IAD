@@ -10,7 +10,7 @@ import utils.MatrixUtils;
  */
 public class Layer {
 
-    protected static final double LEARNING_RATE = 0.5;
+    protected static final double LEARNING_RATE = 0.1;
     protected final boolean hasBias;
     //f-number of features
     //n-number of neurons
@@ -20,7 +20,7 @@ public class Layer {
     protected Matrix errorOnValues; // m x n (+1 if bias)
     protected Matrix errorOnWeights; // f x n
     protected int numFeatures;
-    protected int numNeurons;
+    protected int numNeurons; //without bias
     protected int numExamples;
 
     public Layer(int numFeatures, int numNeurons, int numExamples, boolean hasBias) {
@@ -45,24 +45,25 @@ public class Layer {
             nextWeights = nextWeights.removeFirstColumn();
         }
         Matrix nextLayerErrors = nextLayer.getErrorOnValues();
-        errorOnValues = nextWeights.multiply(nextLayerErrors).transform(new MatrixFunction() {
+        errorOnValues = nextLayerErrors.multiply(nextWeights.transpose()).transform(new MatrixFunction() {
             @Override
             public double evaluate(int i, int j, double value) {
-                Matrix sigmoided = MatrixUtils.sigmoid(nextLayer.activationValues);
-                return value * sigmoided.get(i, j) * (1 - sigmoided.get(i, j));
+                //Matrix sigmoided = MatrixUtils.sigmoid(activationValues);
+                return value * activationValues.get(i, j) * (1 - activationValues.get(i, j));
             }
-        }).transpose();//pewnie tu sie spierdoli
+        });//pewnie tu sie spierdoli
     }
 
     public void propagateBackward(Matrix previousActivationValues) {
-        errorOnWeights = previousActivationValues.transpose().multiply(errorOnValues);
         if (hasBias()) {
-            errorOnWeights = errorOnWeights.removeFirstColumn();
+            errorOnValues = errorOnValues.removeFirstColumn();
         }
+        errorOnWeights = previousActivationValues.transpose().multiply(errorOnValues);
+
     }
 
     public void gradientDescent() {
-        weights = weights.subtract(errorOnWeights.multiply(LEARNING_RATE / numExamples));
+        weights = weights.subtract(errorOnWeights.multiply(LEARNING_RATE));
     }
 
     /**
