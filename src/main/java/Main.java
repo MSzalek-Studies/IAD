@@ -13,8 +13,11 @@ public class Main {
     public static void main(String... args) {
         try {
             Matrix[] matrices = loadData("transformation.txt", "transformation.txt");
-            NeuralNetwork nn = new NeuralNetwork(matrices[0], matrices[1], 500, 3, true);
-            nn.train();
+            NeuralNetwork nn = new NeuralNetwork(matrices[0], matrices[1], 3, true);
+            nn.train(500);
+            Matrix test = new Basic2DMatrix(new double[][]{{0, 0, 1, 0}});
+            Matrix result = nn.predict(test);
+            System.out.print(result.toString());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
