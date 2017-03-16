@@ -1,8 +1,8 @@
-import models.InputLayer;
-import models.Layer;
-import models.OutputLayer;
+package models;
+
 import org.la4j.Matrix;
 import org.la4j.vector.dense.BasicVector;
+import utils.ErrorChart;
 
 import java.util.Arrays;
 
@@ -40,6 +40,7 @@ public class NeuralNetwork {
 
     public void train(int iterations) {
         inputLayer.setInput(inputMatrix);
+        ErrorChart errorChart = new ErrorChart();
         for (int it = 0; it < iterations; it++) {
             forwardPropagateNetwork(inputLayer, hiddenLayer, outputLayer);
 
@@ -53,9 +54,10 @@ public class NeuralNetwork {
             outputLayer.gradientDescent();
 
             double cost = outputLayer.cost(expectedResults);
-            System.out.println(it + "cost: " + cost);
+            errorChart.addEntry(it, cost);
             //TODO: show chart
         }
+        errorChart.generateChart();
         showResults(inputLayer, hiddenLayer, outputLayer, numExamples);
     }
 
