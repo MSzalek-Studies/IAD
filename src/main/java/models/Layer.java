@@ -10,7 +10,8 @@ import utils.MatrixUtils;
  */
 public class Layer {
 
-    protected static final double LEARNING_RATE = 0.1;
+    protected static final double LEARNING_RATE = 1;
+    protected static final double MOMENTUM = 0.7;
     protected final boolean hasBias;
     //f-number of features
     //n-number of neurons
@@ -19,6 +20,7 @@ public class Layer {
     protected Matrix activationValues; // m x n (+1 if bias)
     protected Matrix errorOnValues; // m x n (+1 if bias)
     protected Matrix errorOnWeights; // f x n
+    protected Matrix previousWeightChange; // w poprzedniej epoce
     protected int numFeatures;
     protected int numNeurons; //without bias
     protected int numExamples;
@@ -31,8 +33,7 @@ public class Layer {
 
         weights = MatrixUtils.randomlyInitWeights(numFeatures, numNeurons);
         activationValues = new Basic2DMatrix(numExamples, numNeurons);
-        errorOnValues = new Basic2DMatrix(numNeurons, numExamples);
-        errorOnWeights = new Basic2DMatrix(numFeatures, numNeurons);
+        previousWeightChange = new Basic2DMatrix(numFeatures, numNeurons);
     }
 
     public Layer(int numFeatures, int numNeurons, int numExamples) {
@@ -41,11 +42,12 @@ public class Layer {
 
     public void calculateErrors(Layer nextLayer) {
         Matrix nextWeights = nextLayer.getWeights();
-        if (nextLayer.hasBias()) {
-            nextWeights = nextWeights.removeFirstColumn();
-        }
         Matrix nextLayerErrors = nextLayer.getErrorOnValues();
-        errorOnValues = nextLayerErrors.multiply(nextWeights.transpose()).transform(new MatrixFunction() {
+        if (nextLayer.hasBias()) {
+            nextLayerErrors = nextLayerErrors.removeFirstColumn();
+        }
+        Matrix temp = nextLayerErrors.multiply(nextWeights.transpose());
+        errorOnValues = temp.transform(new MatrixFunction() {
             @Override
             public double evaluate(int i, int j, double value) {
                 //Matrix sigmoided = MatrixUtils.sigmoid(activationValues);
@@ -63,7 +65,9 @@ public class Layer {
     }
 
     public void gradientDescent() {
-        weights = weights.subtract(errorOnWeights.multiply(LEARNING_RATE));
+        Matrix difference = errorOnWeights.multiply(LEARNING_RATE).add(previousWeightChange.multiply(MOMENTUM));
+        previousWeightChange = difference;
+        weights = weights.subtract(difference);
     }
 
     /**

@@ -15,7 +15,7 @@ import java.util.Arrays;
  */
 public class FileUtils {
 
-    public static Matrix loadMatrix(String filename) throws FileNotFoundException {
+    public Matrix loadMatrix(String filename) throws FileNotFoundException {
         File file = new File(filename);
         FileReader fileReader = new FileReader(file);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -32,5 +32,32 @@ public class FileUtils {
         }
 
         return matrix;
+    }
+
+    /**
+     * @param inputFileName - file with inputData that also contains expectedResults in last column
+     * @return firstElem - inputMatrix,
+     * secondElem - expectedResultsMatrix
+     * size = 2
+     */
+    public Matrix[] loadDataFromSingleFile(String inputFileName) throws FileNotFoundException {
+        Matrix inputMatrix = loadMatrix(inputFileName);
+        Matrix expectedResults = new Basic2DMatrix(inputMatrix.rows(), 1);
+        expectedResults.setColumn(0, inputMatrix.getColumn(inputMatrix.columns() - 1));
+        inputMatrix = inputMatrix.removeColumn(inputMatrix.columns() - 1);
+        return new Matrix[]{inputMatrix, expectedResults};
+    }
+
+    /**
+     * @param inputFileName  - file with inputData
+     * @param valuesFileName - file with expectedResults
+     * @return firstElem - inputMatrix,
+     * secondElem - expectedResultsMatrix
+     * size = 2
+     */
+    public Matrix[] loadDataFromTwoFiles(String inputFileName, String valuesFileName) throws FileNotFoundException {
+        Matrix inputMatrix = loadMatrix(inputFileName);
+        Matrix expectedResults = loadMatrix(valuesFileName);
+        return new Matrix[]{inputMatrix, expectedResults};
     }
 }

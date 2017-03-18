@@ -1,12 +1,9 @@
-import com.sun.istack.internal.Nullable;
 import javafx.util.Pair;
 import models.NeuralNetwork;
 import org.la4j.Matrix;
 import org.la4j.matrix.dense.Basic2DMatrix;
 import utils.DataSetChart;
-import utils.FileUtils;
 
-import java.io.FileNotFoundException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,8 +15,8 @@ import static java.lang.Math.abs;
 public class Main {
 
     public static void main(String... args) {
-        try {
-            Matrix[] matrices = loadData("transformation.txt", "transformation.txt");
+        /*try {
+            Matrix[] matrices;// = loadData("transformation.txt", "transformation.txt");
             //Matrix[] matrices = loadData("testData1.txt", null);
             NeuralNetwork nn = new NeuralNetwork(matrices[0], matrices[1], 3, true);
             nn.train(500);
@@ -30,7 +27,8 @@ public class Main {
             //printDataSetWithBoundry(matrices, nn);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }
+        }*/
+        new Transofrmation().performTransformation();
     }
 
     private static void printDataSet(Matrix[] matrices) {
@@ -74,25 +72,5 @@ public class Main {
             }
         }
         return boundryPoints;
-    }
-
-    /**
-     * @param inputFileName
-     * @param valuesFileName - can be null if first matrix contains values in last column
-     * @return firstElem - inputMatrix,
-     * secondElem - expectedResultsMatrix
-     * size = 2
-     */
-    private static Matrix[] loadData(String inputFileName, @Nullable String valuesFileName) throws FileNotFoundException {
-        Matrix inputMatrix = FileUtils.loadMatrix(inputFileName);
-        Matrix expectedResults;
-        if (valuesFileName == null) {
-            expectedResults = new Basic2DMatrix(inputMatrix.rows(), 1);
-            expectedResults.setColumn(0, inputMatrix.getColumn(inputMatrix.columns() - 1));
-            inputMatrix = inputMatrix.removeColumn(inputMatrix.columns() - 1);
-        } else {
-            expectedResults = FileUtils.loadMatrix(valuesFileName);
-        }
-        return new Matrix[]{inputMatrix, expectedResults};
     }
 }
