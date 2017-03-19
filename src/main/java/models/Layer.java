@@ -1,5 +1,6 @@
 package models;
 
+import activator.Activator;
 import org.la4j.Matrix;
 import org.la4j.matrix.dense.Basic2DMatrix;
 import org.la4j.matrix.functor.MatrixFunction;
@@ -10,8 +11,8 @@ import utils.MatrixUtils;
  */
 public class Layer {
 
-    protected static final double LEARNING_RATE = 1;
-    protected static final double MOMENTUM = 0.7;
+    protected static final double LEARNING_RATE = 0.003;
+    protected static final double MOMENTUM = 0.9;
     protected final boolean hasBias;
     //f-number of features
     //n-number of neurons
@@ -25,19 +26,22 @@ public class Layer {
     protected int numNeurons; //without bias
     protected int numExamples;
 
-    public Layer(int numFeatures, int numNeurons, int numExamples, boolean hasBias) {
+    protected Activator activator;
+
+    public Layer(int numFeatures, int numNeurons, int numExamples, boolean hasBias, Activator activator) {
         this.hasBias = hasBias;
         this.numFeatures = numFeatures;
         this.numNeurons = numNeurons;
         this.numExamples = numExamples;
+        this.activator = activator;
 
         weights = MatrixUtils.randomlyInitWeights(numFeatures, numNeurons);
         activationValues = new Basic2DMatrix(numExamples, numNeurons);
         previousWeightChange = new Basic2DMatrix(numFeatures, numNeurons);
     }
 
-    public Layer(int numFeatures, int numNeurons, int numExamples) {
-        this(numFeatures, numNeurons, numExamples, false);
+    public Layer(int numFeatures, int numNeurons, int numExamples, Activator activator) {
+        this(numFeatures, numNeurons, numExamples, false, activator);
     }
 
     public void calculateErrors(Layer nextLayer) {
@@ -75,7 +79,7 @@ public class Layer {
      */
     public void forwardPropagate(Matrix inputValues) {
         Matrix values = inputValues.multiply(weights);
-        activationValues = MatrixUtils.sigmoid(values);
+        activationValues = activator.activate(values);
         if (hasBias) {
             activationValues = MatrixUtils.addBiasColumn(activationValues);
         }

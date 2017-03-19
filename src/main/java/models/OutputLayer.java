@@ -1,5 +1,6 @@
 package models;
 
+import activator.Activator;
 import org.la4j.Matrix;
 import org.la4j.matrix.functor.MatrixFunction;
 
@@ -8,8 +9,8 @@ import org.la4j.matrix.functor.MatrixFunction;
  */
 public class OutputLayer extends Layer {
 
-    public OutputLayer(int numFeatures, int numNeurons, int numExamples) {
-        super(numFeatures, numNeurons, numExamples, false);
+    public OutputLayer(int numFeatures, int numNeurons, int numExamples, Activator activator) {
+        super(numFeatures, numNeurons, numExamples, false, activator);
     }
 
     public double cost(Matrix expectedValues) {

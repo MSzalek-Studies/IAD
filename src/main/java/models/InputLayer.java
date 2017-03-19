@@ -13,7 +13,7 @@ public class InputLayer extends Layer {
     }
 
     public InputLayer(int numNeurons, int numExamples, boolean hasBias) {
-        super(1, numNeurons, numExamples, hasBias);
+        super(1, numNeurons, numExamples, hasBias, null);
     }
 
     public void setInput(Matrix data) {

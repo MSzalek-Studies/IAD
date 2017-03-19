@@ -28,7 +28,8 @@ public class Main {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }*/
-        new Transofrmation().performTransformation();
+        //new Transofrmation().performTransformation();
+        new Approximation().performApproximation();
     }
 
     private static void printDataSet(Matrix[] matrices) {

@@ -11,10 +11,6 @@ import java.util.Random;
  */
 public class MatrixUtils {
 
-    public static Matrix sigmoid(Matrix matrix) {
-        return matrix.transform((i, i1, v) -> 1 / (1 + Math.exp(-v)));
-    }
-
     public static Matrix addBiasColumn(Matrix matrix) {
         Matrix tempMatrix = new Basic2DMatrix(matrix.rows(), matrix.columns() + 1);
         tempMatrix.setAll(1);

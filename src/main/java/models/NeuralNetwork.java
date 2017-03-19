@@ -1,8 +1,10 @@
 package models;
 
+import activator.Activator;
+import activator.SigmoidActivator;
+import org.jfree.data.xy.XYSeries;
 import org.la4j.Matrix;
 import org.la4j.vector.dense.BasicVector;
-import utils.ErrorChart;
 
 import java.util.Arrays;
 
@@ -23,10 +25,25 @@ public class NeuralNetwork {
     private Layer[] hiddenLayers;
     private OutputLayer outputLayer;
 
+    private Activator activator;
+    private Activator outputActivator;
+
     public NeuralNetwork(Matrix inputMatrix, Matrix expectedResults,
                          boolean includeBias, int[] hiddenLayerSizes) {
+        this(inputMatrix, expectedResults, includeBias, hiddenLayerSizes, new SigmoidActivator());
+    }
+
+    public NeuralNetwork(Matrix inputMatrix, Matrix expectedResults,
+                         boolean includeBias, int[] hiddenLayerSizes, Activator outputActivator) {
+        this(inputMatrix, expectedResults, includeBias, hiddenLayerSizes, outputActivator, new SigmoidActivator());
+    }
+
+    public NeuralNetwork(Matrix inputMatrix, Matrix expectedResults,
+                         boolean includeBias, int[] hiddenLayerSizes, Activator outputActivator, Activator hiddenActivator) {
         this.inputMatrix = inputMatrix;
         this.expectedResults = expectedResults;
+        this.outputActivator = outputActivator;
+        this.activator = hiddenActivator;
 
         numExamples = inputMatrix.rows();
         inputSize = inputMatrix.getRow(0).length();
@@ -34,12 +51,11 @@ public class NeuralNetwork {
         this.includeBias = includeBias;
 
         initLayers(hiddenLayerSizes);
-
     }
 
-    public void train(int maxIterations, double desiredError) {
+    public XYSeries train(int maxIterations, double desiredError) {
         inputLayer.setInput(inputMatrix);
-        ErrorChart errorChart = new ErrorChart();
+        XYSeries series = new XYSeries("Seria");
         int iteration = 0;
         double error;
         do {
@@ -50,12 +66,12 @@ public class NeuralNetwork {
 
             iteration++;
             error = outputLayer.cost(expectedResults);
-            errorChart.addEntry(iteration, error);
+            series.add(iteration, error);
         }
         while (iteration < maxIterations && error > desiredError);
 
-        errorChart.generateChart();
         showResults();
+        return series;
     }
 
     /**
@@ -143,7 +159,8 @@ public class NeuralNetwork {
         outputLayer = new OutputLayer(
                 numInputsWithoutBias + (includeBias ? 1 : 0),
                 outputSize,
-                numExamples);
+                numExamples,
+                outputActivator);
     }
 
     private void initHiddenLayers(int[] hiddenLayerSizes) {
@@ -151,14 +168,16 @@ public class NeuralNetwork {
                 inputSize + (includeBias ? 1 : 0),
                 hiddenLayerSizes[0],
                 numExamples,
-                includeBias);
+                includeBias,
+                activator);
         hiddenLayers[0] = firstHiddenLayer;
         for (int i = 1; i < hiddenLayerSizes.length; i++) {
             Layer layer = new Layer(
                     hiddenLayerSizes[i - 1] + (includeBias ? 1 : 0),
                     hiddenLayerSizes[i],
                     numExamples,
-                    includeBias);
+                    includeBias,
+                    activator);
             hiddenLayers[i] = layer;
         }
     }

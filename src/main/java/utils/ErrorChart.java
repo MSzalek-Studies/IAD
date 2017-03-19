@@ -15,14 +15,19 @@ import java.io.IOException;
  */
 public class ErrorChart {
 
+    XYSeriesCollection dataset = new XYSeriesCollection();
     private XYSeries series = new XYSeries("XYGraph");
 
     public void addEntry(double x, double y) {
         series.add(x, y);
     }
 
+    public void addSeries(XYSeries series) {
+        dataset.addSeries(series);
+    }
+
     public void generateChart() {
-        XYSeriesCollection dataset = new XYSeriesCollection(); // Add the series to your data set
+        // Add the series to your data set
         dataset.addSeries(series);
 
         // Generate the graph
