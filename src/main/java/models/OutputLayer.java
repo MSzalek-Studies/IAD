@@ -23,7 +23,7 @@ public class OutputLayer extends Layer {
             public double evaluate(int i, int j, double value) {
                 return value * value;
             }
-        }).sum() / 2;
+        }).sum(); //TODO: dzielic przez 2?
         return cost;
     }
 

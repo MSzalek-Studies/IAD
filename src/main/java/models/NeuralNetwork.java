@@ -21,7 +21,7 @@ public class NeuralNetwork {
     private int outputSize;
     private boolean includeBias;
 
-    private InputLayer inputLayer;
+    protected InputLayer inputLayer;
     private Layer[] hiddenLayers;
     private OutputLayer outputLayer;
 
@@ -65,7 +65,7 @@ public class NeuralNetwork {
             gradientDescent();
 
             iteration++;
-            error = outputLayer.cost(expectedResults);
+            error = outputLayer.cost(expectedResults) / numExamples;
             series.add(iteration, error);
         }
         while (iteration < maxIterations && error > desiredError);
@@ -82,6 +82,12 @@ public class NeuralNetwork {
         inputLayer.setInput(input);
         forwardPropagateNetwork();
         return outputLayer.getActivationValues();
+    }
+
+    public double test(Matrix input, Matrix expectedValues) {
+        inputLayer.setInput(input);
+        forwardPropagateNetwork();
+        return outputLayer.cost(expectedValues) / input.rows();
     }
 
     private void gradientDescent() {

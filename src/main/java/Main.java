@@ -15,21 +15,9 @@ import static java.lang.Math.abs;
 public class Main {
 
     public static void main(String... args) {
-        /*try {
-            Matrix[] matrices;// = loadData("transformation.txt", "transformation.txt");
-            //Matrix[] matrices = loadData("testData1.txt", null);
-            NeuralNetwork nn = new NeuralNetwork(matrices[0], matrices[1], 3, true);
-            nn.train(500);
-            //Matrix test = new Basic2DMatrix(new double[][]{{10,10}});
-            //Matrix result = nn.predict(test);
-            //System.out.print(result.toString());
-            //printDataSet(matrices);
-            //printDataSetWithBoundry(matrices, nn);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }*/
         //new Transofrmation().performTransformation();
-        new Approximation().performApproximation();
+        //new Approximation().performApproximation();
+        new Classification().performClassification();
     }
 
     private static void printDataSet(Matrix[] matrices) {
