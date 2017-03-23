@@ -65,7 +65,7 @@ public class NeuralNetwork {
             gradientDescent();
 
             iteration++;
-            error = outputLayer.cost(expectedResults) / numExamples;
+            error = outputLayer.cost(expectedResults, numExamples);
             series.add(iteration, error);
         }
         while (iteration < maxIterations && error > desiredError);
@@ -87,7 +87,7 @@ public class NeuralNetwork {
     public double test(Matrix input, Matrix expectedValues) {
         inputLayer.setInput(input);
         forwardPropagateNetwork();
-        return outputLayer.cost(expectedValues) / input.rows();
+        return outputLayer.cost(expectedValues, input.rows());
     }
 
     private void gradientDescent() {

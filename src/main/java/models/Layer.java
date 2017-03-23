@@ -54,7 +54,6 @@ public class Layer {
         errorOnValues = temp.transform(new MatrixFunction() {
             @Override
             public double evaluate(int i, int j, double value) {
-                //Matrix sigmoided = MatrixUtils.sigmoid(activationValues);
                 return value * activationValues.get(i, j) * (1 - activationValues.get(i, j));
             }
         });//pewnie tu sie spierdoli
@@ -65,10 +64,11 @@ public class Layer {
             errorOnValues = errorOnValues.removeFirstColumn();
         }
         errorOnWeights = previousActivationValues.transpose().multiply(errorOnValues);
-
+        errorOnWeights = errorOnWeights.add(weights.multiply(LEARNING_RATE / numExamples));
     }
 
     public void gradientDescent() {
+        //Matrix difference = errorOnWeights.multiply(LEARNING_RATE);
         Matrix difference = errorOnWeights.multiply(LEARNING_RATE).add(previousWeightChange.multiply(MOMENTUM));
         previousWeightChange = difference;
         weights = weights.subtract(difference);

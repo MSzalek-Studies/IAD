@@ -20,7 +20,7 @@ public class Approximation {
             NeuralNetwork nn = new NeuralNetwork(matrices[0], matrices[1], true,
                     new int[]{20}, new LinearActivator());
             ErrorChart errorChart = new ErrorChart();
-            XYSeries errorSeries = nn.train(5000, 0.01);
+            XYSeries errorSeries = nn.train(500, 0.01);
             errorChart.addSeries(errorSeries);
             errorChart.generateChart();
             show2DDataAndApproximation(matrices, nn);

@@ -1,14 +1,3 @@
-import javafx.util.Pair;
-import models.NeuralNetwork;
-import org.la4j.Matrix;
-import org.la4j.matrix.dense.Basic2DMatrix;
-import utils.DataSetChart;
-
-import java.util.LinkedList;
-import java.util.List;
-
-import static java.lang.Math.abs;
-
 /**
  * Created by szale_000 on 2017-03-07.
  */
@@ -16,11 +5,11 @@ public class Main {
 
     public static void main(String... args) {
         //new Transofrmation().performTransformation();
-        //new Approximation().performApproximation();
-        new Classification().performClassification();
+        new Approximation().performApproximation();
+        //new Classification().performClassification();
     }
 
-    private static void printDataSet(Matrix[] matrices) {
+    /*private static void printDataSet(Matrix[] matrices) {
         //TODO: numlabels jest hardcodowane
         DataSetChart chart = new DataSetChart(2);
         for (int i = 0; i < matrices[0].rows(); i++) {
@@ -61,5 +50,5 @@ public class Main {
             }
         }
         return boundryPoints;
-    }
+    }*/
 }

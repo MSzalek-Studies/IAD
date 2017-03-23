@@ -14,7 +14,7 @@ public class Transofrmation {
     public void performTransformation() {
         try {
             Matrix[] matrices = new FileUtils().loadDataFromTwoFiles("transformation.txt", "transformation.txt");
-            NeuralNetwork nn = new NeuralNetwork(matrices[0], matrices[1], true, new int[]{5, 5, 5});
+            NeuralNetwork nn = new NeuralNetwork(matrices[0], matrices[1], true, new int[]{10});
             ErrorChart errorChart = new ErrorChart();
             XYSeries errorSeries = nn.train(500, 0.001);
             errorChart.addSeries(errorSeries);
