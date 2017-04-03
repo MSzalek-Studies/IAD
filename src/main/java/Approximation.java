@@ -17,11 +17,24 @@ public class Approximation {
     public void performApproximation() {
         try {
             Matrix[] matrices = new FileUtils().loadDataFromSingleFile("approximation_train_1.txt");
-            NeuralNetwork nn = new NeuralNetwork(matrices[0], matrices[1], true,
-                    new int[]{5}, new LinearActivator(), 0.003, 0.9);
             ErrorChart errorChart = new ErrorChart();
-            XYSeries errorSeries = nn.train(5000, 0.01);
+
+            NeuralNetwork nn = new NeuralNetwork(matrices[0].columns(), matrices[1].columns(), true,
+                    new int[]{4}, new LinearActivator(), 0.003, 0.9);
+
+            int iterations = 100;
+            XYSeries errorSeries = nn.train(matrices[0], matrices[1], iterations, 0.01);
             errorChart.addSeries(errorSeries);
+
+            matrices = new FileUtils().loadDataFromSingleFile("approximation_train_2.txt");
+            errorSeries = nn.train(matrices[0], matrices[1], iterations, 0.01);
+
+            XYSeries newSeries = new XYSeries("Seria1");
+            for (int i = 0; i < iterations; i++) {
+                newSeries.add(iterations + errorSeries.getX(i).intValue(), errorSeries.getY(i));
+            }
+            errorChart.addSeries(newSeries);
+
             errorChart.generateChart();
             show2DDataAndApproximation(matrices, nn);
 

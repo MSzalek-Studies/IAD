@@ -22,6 +22,10 @@ public class ErrorChart {
     }
 
     public void generateChart() {
+        generateChart("chart.jpg");
+    }
+
+    public void generateChart(String outputName) {
 
         // Generate the graph
         JFreeChart chart = ChartFactory.createXYLineChart(
@@ -36,9 +40,10 @@ public class ErrorChart {
         );
 
         try {
-            ChartUtilities.saveChartAsJPEG(new File("chart.jpg"), chart, 500, 300);
+            ChartUtilities.saveChartAsJPEG(new File(outputName), chart, 500, 300);
         } catch (IOException e) {
             System.err.println("Problem occurred creating chart.");
         }
     }
+
 }

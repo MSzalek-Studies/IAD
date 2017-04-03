@@ -8,12 +8,12 @@ import utils.MatrixUtils;
  */
 public class InputLayer extends Layer {
 
-    public InputLayer(int numNeurons, int numExamples, double learningRate, double momentum) {
-        this(numNeurons, numExamples, false, learningRate, momentum);
+    public InputLayer(int numNeurons, double learningRate, double momentum) {
+        this(numNeurons, false, learningRate, momentum);
     }
 
-    public InputLayer(int numNeurons, int numExamples, boolean hasBias, double learningRate, double momentum) {
-        super(1, numNeurons, numExamples, hasBias, null, learningRate, momentum);
+    public InputLayer(int numNeurons, boolean hasBias, double learningRate, double momentum) {
+        super(1, numNeurons, hasBias, null, learningRate, momentum);
     }
 
     public void setInput(Matrix data) {

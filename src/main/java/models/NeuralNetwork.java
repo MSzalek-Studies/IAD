@@ -13,10 +13,6 @@ import java.util.Arrays;
  */
 public class NeuralNetwork {
 
-    private Matrix inputMatrix;
-    private Matrix expectedResults;
-
-    private int numExamples;
     private int inputSize;
     private int outputSize;
     private boolean includeBias;
@@ -30,43 +26,41 @@ public class NeuralNetwork {
     private Activator activator;
     private Activator outputActivator;
 
-    public NeuralNetwork(Matrix inputMatrix, Matrix expectedResults,
+    public NeuralNetwork(int inputSize, int outputSize,
                          boolean includeBias, int[] hiddenLayerSizes, double learningRate, double momentum) {
-        this(inputMatrix, expectedResults, includeBias, hiddenLayerSizes, new SigmoidActivator(), learningRate, momentum);
+        this(inputSize, outputSize, includeBias, hiddenLayerSizes, new SigmoidActivator(), learningRate, momentum);
     }
 
-    public NeuralNetwork(Matrix inputMatrix, Matrix expectedResults,
+    public NeuralNetwork(int inputSize, int outputSize,
                          boolean includeBias, int[] hiddenLayerSizes, Activator outputActivator, double learningRate, double momentum) {
-        this(inputMatrix, expectedResults, includeBias, hiddenLayerSizes, outputActivator, new SigmoidActivator(), learningRate, momentum);
+        this(inputSize, outputSize, includeBias, hiddenLayerSizes, outputActivator, new SigmoidActivator(), learningRate, momentum);
     }
 
-    public NeuralNetwork(Matrix inputMatrix, Matrix expectedResults,
+    public NeuralNetwork(int inputSize, int outputSize,
                          boolean includeBias, int[] hiddenLayerSizes,
                          Activator outputActivator, Activator hiddenActivator,
                          double learningRate, double momentum) {
-        this.inputMatrix = inputMatrix;
-        this.expectedResults = expectedResults;
         this.outputActivator = outputActivator;
         this.activator = hiddenActivator;
         this.momentum = momentum;
         this.learningRate = learningRate;
 
-        numExamples = inputMatrix.rows();
-        inputSize = inputMatrix.getRow(0).length();
-        outputSize = expectedResults.getRow(0).length();
+        this.inputSize = inputSize;
+        this.outputSize = outputSize;
         this.includeBias = includeBias;
 
         initLayers(hiddenLayerSizes);
     }
 
-    public XYSeries train(int maxIterations, double desiredError) {
+    public XYSeries train(Matrix inputMatrix, Matrix expectedResults, int maxIterations, double desiredError) {
+        int numExamples = inputMatrix.rows();
         inputLayer.setInput(inputMatrix);
         XYSeries series = new XYSeries("Seria");
         int iteration = 0;
         double error;
         do {
             forwardPropagateNetwork();
-            calculateErrors();
+            calculateErrors(expectedResults);
             backwardPropagate();
             gradientDescent();
 
@@ -76,7 +70,7 @@ public class NeuralNetwork {
         }
         while (iteration < maxIterations && error > desiredError);
 
-        showResults();
+        //showResults(expectedResults);
         return series;
     }
 
@@ -115,7 +109,7 @@ public class NeuralNetwork {
         }
     }
 
-    private void calculateErrors() {
+    private void calculateErrors(Matrix expectedResults) {
         outputLayer.calculateErrors(expectedResults);
         if (hiddenLayers.length > 0) {
             hiddenLayers[hiddenLayers.length - 1].calculateErrors(outputLayer);
@@ -125,12 +119,11 @@ public class NeuralNetwork {
         }
     }
 
-    private void showResults() {
+    private void showResults(Matrix expectedResults) {
         forwardPropagateNetwork();
 
         System.out.println("\n\n================================\n\n");
-        for (int i = 0; i < numExamples; i++) {
-            System.out.println("input: " + Arrays.toString(((BasicVector) inputMatrix.getRow(i)).toArray()));
+        for (int i = 0; i < expectedResults.rows(); i++) {
             System.out.println("expected: " + Arrays.toString(((BasicVector) expectedResults.getRow(i)).toArray()));
             System.out.println("output: " + Arrays.toString(((BasicVector) outputLayer.getActivationValues().getRow(i)).toArray()) + "\n");
         }
@@ -153,7 +146,7 @@ public class NeuralNetwork {
     //
     private void initLayers(int[] hiddenLayerSizes) {
         hiddenLayers = new Layer[hiddenLayerSizes.length];
-        inputLayer = new InputLayer(inputSize, numExamples, includeBias, learningRate, momentum);
+        inputLayer = new InputLayer(inputSize, includeBias, learningRate, momentum);
         if (hiddenLayerSizes.length > 0) {
             initLayersWithHidden(hiddenLayerSizes);
         } else {
@@ -171,7 +164,6 @@ public class NeuralNetwork {
         outputLayer = new OutputLayer(
                 numInputsWithoutBias + (includeBias ? 1 : 0),
                 outputSize,
-                numExamples,
                 outputActivator,
                 learningRate,
                 momentum);
@@ -181,7 +173,6 @@ public class NeuralNetwork {
         Layer firstHiddenLayer = new Layer(
                 inputSize + (includeBias ? 1 : 0),
                 hiddenLayerSizes[0],
-                numExamples,
                 includeBias,
                 activator,
                 learningRate,
@@ -191,7 +182,6 @@ public class NeuralNetwork {
             Layer layer = new Layer(
                     hiddenLayerSizes[i - 1] + (includeBias ? 1 : 0),
                     hiddenLayerSizes[i],
-                    numExamples,
                     includeBias,
                     activator,
                     learningRate,

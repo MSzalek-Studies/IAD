@@ -11,8 +11,6 @@ import utils.MatrixUtils;
  */
 public class Layer {
 
-    protected static final double LEARNING_RATE = 0.003;
-    protected static final double MOMENTUM = 0.9;
     protected final boolean hasBias;
     //f-number of features
     //n-number of neurons
@@ -24,28 +22,26 @@ public class Layer {
     protected Matrix previousWeightChange; // w poprzedniej epoce
     protected int numFeatures;
     protected int numNeurons; //without bias
-    protected int numExamples;
     protected double momentum;
     protected double learningRate;
 
     protected Activator activator;
 
-    public Layer(int numFeatures, int numNeurons, int numExamples, boolean hasBias, Activator activator, double learningRate, double momentum) {
+    public Layer(int numFeatures, int numNeurons, boolean hasBias, Activator activator, double learningRate, double momentum) {
         this.hasBias = hasBias;
         this.numFeatures = numFeatures;
         this.numNeurons = numNeurons;
-        this.numExamples = numExamples;
         this.activator = activator;
         this.learningRate = learningRate;
         this.momentum = momentum;
 
         weights = MatrixUtils.randomlyInitWeights(numFeatures, numNeurons);
-        activationValues = new Basic2DMatrix(numExamples, numNeurons);
+        //activationValues = new Basic2DMatrix(numExamples, numNeurons); niepotrzebne
         previousWeightChange = new Basic2DMatrix(numFeatures, numNeurons);
     }
 
-    public Layer(int numFeatures, int numNeurons, int numExamples, Activator activator, double learningRate, double momentum) {
-        this(numFeatures, numNeurons, numExamples, false, activator, learningRate, momentum);
+    public Layer(int numFeatures, int numNeurons, Activator activator, double learningRate, double momentum) {
+        this(numFeatures, numNeurons, false, activator, learningRate, momentum);
     }
 
     public void calculateErrors(Layer nextLayer) {
