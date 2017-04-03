@@ -56,7 +56,7 @@ public class Layer {
             public double evaluate(int i, int j, double value) {
                 return value * activationValues.get(i, j) * (1 - activationValues.get(i, j));
             }
-        });//pewnie tu sie spierdoli
+        });//pewnie tu sie popsuje
     }
 
     public void propagateBackward(Matrix previousActivationValues) {
@@ -64,11 +64,12 @@ public class Layer {
             errorOnValues = errorOnValues.removeFirstColumn();
         }
         errorOnWeights = previousActivationValues.transpose().multiply(errorOnValues);
-        errorOnWeights = errorOnWeights.add(weights.multiply(LEARNING_RATE / numExamples));
+        //Matrix regularization = weights.multiply(LEARNING_RATE/numExamples);
+        //errorOnWeights = errorOnWeights.add(regularization);
     }
 
     public void gradientDescent() {
-        //Matrix difference = errorOnWeights.multiply(LEARNING_RATE);
+        //Matrix difference = errorOnWeights.multiply(LEARNING_RATE/numExamples);
         Matrix difference = errorOnWeights.multiply(LEARNING_RATE).add(previousWeightChange.multiply(MOMENTUM));
         previousWeightChange = difference;
         weights = weights.subtract(difference);
