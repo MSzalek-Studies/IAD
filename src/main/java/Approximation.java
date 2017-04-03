@@ -18,7 +18,7 @@ public class Approximation {
         try {
             Matrix[] matrices = new FileUtils().loadDataFromSingleFile("approximation_train_1.txt");
             NeuralNetwork nn = new NeuralNetwork(matrices[0], matrices[1], true,
-                    new int[]{5}, new LinearActivator());
+                    new int[]{5}, new LinearActivator(), 0.003, 0.9);
             ErrorChart errorChart = new ErrorChart();
             XYSeries errorSeries = nn.train(5000, 0.01);
             errorChart.addSeries(errorSeries);

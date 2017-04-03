@@ -9,8 +9,8 @@ import org.la4j.matrix.functor.MatrixFunction;
  */
 public class OutputLayer extends Layer {
 
-    public OutputLayer(int numFeatures, int numNeurons, int numExamples, Activator activator) {
-        super(numFeatures, numNeurons, numExamples, false, activator);
+    public OutputLayer(int numFeatures, int numNeurons, int numExamples, Activator activator, double learningRate, double momentum) {
+        super(numFeatures, numNeurons, numExamples, false, activator, learningRate, momentum);
     }
 
     public double cost(Matrix expectedValues, int numExamples) {

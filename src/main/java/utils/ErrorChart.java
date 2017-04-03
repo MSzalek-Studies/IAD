@@ -16,19 +16,12 @@ import java.io.IOException;
 public class ErrorChart {
 
     XYSeriesCollection dataset = new XYSeriesCollection();
-    private XYSeries series = new XYSeries("XYGraph");
-
-    public void addEntry(double x, double y) {
-        series.add(x, y);
-    }
 
     public void addSeries(XYSeries series) {
         dataset.addSeries(series);
     }
 
     public void generateChart() {
-        // Add the series to your data set
-        dataset.addSeries(series);
 
         // Generate the graph
         JFreeChart chart = ChartFactory.createXYLineChart(
@@ -37,10 +30,11 @@ public class ErrorChart {
                 "błąd", // y-axis Label
                 dataset, // Dataset
                 PlotOrientation.VERTICAL, // Plot Orientation
-                false, // Show Legend
+                true, // Show Legend
                 false, // Use tooltips
                 false // Configure chart to generate URLs?
         );
+
         try {
             ChartUtilities.saveChartAsJPEG(new File("chart.jpg"), chart, 500, 300);
         } catch (IOException e) {

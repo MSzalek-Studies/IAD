@@ -17,12 +17,12 @@ public class Classification {
             Matrix[] matrices = new FileUtils().loadDataFromSingleFile("classification_train.txt");
             matrices[1] = unrollClassificationMatrix(matrices[1]);
             NeuralNetwork nn = new NeuralNetwork(matrices[0], matrices[1], true,
-                    new int[]{20});
+                    new int[]{20}, 0.003, 0.9);
             ErrorChart errorChart = new ErrorChart();
             XYSeries errorSeries = nn.train(500, 0.01);
             errorChart.addSeries(errorSeries);
             errorChart.generateChart();
-            //show2DDataAndApproximation(matrices, nn);
+//            show2DDataAndApproximation(matrices, nn);
             Matrix[] testMatrices = new FileUtils().loadDataFromSingleFile("classification_test.txt");
             System.out.print("TEST: " + test(nn, testMatrices[0], testMatrices[1]));
         } catch (FileNotFoundException e) {

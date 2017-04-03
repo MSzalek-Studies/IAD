@@ -25,23 +25,27 @@ public class Layer {
     protected int numFeatures;
     protected int numNeurons; //without bias
     protected int numExamples;
+    protected double momentum;
+    protected double learningRate;
 
     protected Activator activator;
 
-    public Layer(int numFeatures, int numNeurons, int numExamples, boolean hasBias, Activator activator) {
+    public Layer(int numFeatures, int numNeurons, int numExamples, boolean hasBias, Activator activator, double learningRate, double momentum) {
         this.hasBias = hasBias;
         this.numFeatures = numFeatures;
         this.numNeurons = numNeurons;
         this.numExamples = numExamples;
         this.activator = activator;
+        this.learningRate = learningRate;
+        this.momentum = momentum;
 
         weights = MatrixUtils.randomlyInitWeights(numFeatures, numNeurons);
         activationValues = new Basic2DMatrix(numExamples, numNeurons);
         previousWeightChange = new Basic2DMatrix(numFeatures, numNeurons);
     }
 
-    public Layer(int numFeatures, int numNeurons, int numExamples, Activator activator) {
-        this(numFeatures, numNeurons, numExamples, false, activator);
+    public Layer(int numFeatures, int numNeurons, int numExamples, Activator activator, double learningRate, double momentum) {
+        this(numFeatures, numNeurons, numExamples, false, activator, learningRate, momentum);
     }
 
     public void calculateErrors(Layer nextLayer) {
@@ -70,7 +74,7 @@ public class Layer {
 
     public void gradientDescent() {
         //Matrix difference = errorOnWeights.multiply(LEARNING_RATE/numExamples);
-        Matrix difference = errorOnWeights.multiply(LEARNING_RATE).add(previousWeightChange.multiply(MOMENTUM));
+        Matrix difference = errorOnWeights.multiply(learningRate).add(previousWeightChange.multiply(momentum));
         previousWeightChange = difference;
         weights = weights.subtract(difference);
     }

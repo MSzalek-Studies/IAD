@@ -20,6 +20,8 @@ public class NeuralNetwork {
     private int inputSize;
     private int outputSize;
     private boolean includeBias;
+    private double learningRate;
+    private double momentum;
 
     protected InputLayer inputLayer;
     private Layer[] hiddenLayers;
@@ -29,21 +31,25 @@ public class NeuralNetwork {
     private Activator outputActivator;
 
     public NeuralNetwork(Matrix inputMatrix, Matrix expectedResults,
-                         boolean includeBias, int[] hiddenLayerSizes) {
-        this(inputMatrix, expectedResults, includeBias, hiddenLayerSizes, new SigmoidActivator());
+                         boolean includeBias, int[] hiddenLayerSizes, double learningRate, double momentum) {
+        this(inputMatrix, expectedResults, includeBias, hiddenLayerSizes, new SigmoidActivator(), learningRate, momentum);
     }
 
     public NeuralNetwork(Matrix inputMatrix, Matrix expectedResults,
-                         boolean includeBias, int[] hiddenLayerSizes, Activator outputActivator) {
-        this(inputMatrix, expectedResults, includeBias, hiddenLayerSizes, outputActivator, new SigmoidActivator());
+                         boolean includeBias, int[] hiddenLayerSizes, Activator outputActivator, double learningRate, double momentum) {
+        this(inputMatrix, expectedResults, includeBias, hiddenLayerSizes, outputActivator, new SigmoidActivator(), learningRate, momentum);
     }
 
     public NeuralNetwork(Matrix inputMatrix, Matrix expectedResults,
-                         boolean includeBias, int[] hiddenLayerSizes, Activator outputActivator, Activator hiddenActivator) {
+                         boolean includeBias, int[] hiddenLayerSizes,
+                         Activator outputActivator, Activator hiddenActivator,
+                         double learningRate, double momentum) {
         this.inputMatrix = inputMatrix;
         this.expectedResults = expectedResults;
         this.outputActivator = outputActivator;
         this.activator = hiddenActivator;
+        this.momentum = momentum;
+        this.learningRate = learningRate;
 
         numExamples = inputMatrix.rows();
         inputSize = inputMatrix.getRow(0).length();
@@ -147,7 +153,7 @@ public class NeuralNetwork {
     //
     private void initLayers(int[] hiddenLayerSizes) {
         hiddenLayers = new Layer[hiddenLayerSizes.length];
-        inputLayer = new InputLayer(inputSize, numExamples, includeBias);
+        inputLayer = new InputLayer(inputSize, numExamples, includeBias, learningRate, momentum);
         if (hiddenLayerSizes.length > 0) {
             initLayersWithHidden(hiddenLayerSizes);
         } else {
@@ -166,7 +172,9 @@ public class NeuralNetwork {
                 numInputsWithoutBias + (includeBias ? 1 : 0),
                 outputSize,
                 numExamples,
-                outputActivator);
+                outputActivator,
+                learningRate,
+                momentum);
     }
 
     private void initHiddenLayers(int[] hiddenLayerSizes) {
@@ -175,7 +183,9 @@ public class NeuralNetwork {
                 hiddenLayerSizes[0],
                 numExamples,
                 includeBias,
-                activator);
+                activator,
+                learningRate,
+                momentum);
         hiddenLayers[0] = firstHiddenLayer;
         for (int i = 1; i < hiddenLayerSizes.length; i++) {
             Layer layer = new Layer(
@@ -183,7 +193,9 @@ public class NeuralNetwork {
                     hiddenLayerSizes[i],
                     numExamples,
                     includeBias,
-                    activator);
+                    activator,
+                    learningRate,
+                    momentum);
             hiddenLayers[i] = layer;
         }
     }
