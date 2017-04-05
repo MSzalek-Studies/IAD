@@ -28,43 +28,53 @@ public class Classification {
     }
 
     private void trainOneFeature(Matrix inputMatrix, Matrix outputMatrix) throws FileNotFoundException {
-        train(inputMatrix, outputMatrix, "train_0.png", 0);
-        train(inputMatrix, outputMatrix, "train_1.png", 1);
-        train(inputMatrix, outputMatrix, "train_2.png", 2);
-        train(inputMatrix, outputMatrix, "train_3.png", 3);
+        ErrorChart errorChart = new ErrorChart();
+        errorChart.addSeries(train(inputMatrix, outputMatrix, "Cecha 1", 0));
+        errorChart.addSeries(train(inputMatrix, outputMatrix, "Cecha 2", 1));
+        errorChart.addSeries(train(inputMatrix, outputMatrix, "Cecha 3", 2));
+        errorChart.addSeries(train(inputMatrix, outputMatrix, "Cecha 4", 3));
+        errorChart.generateChart("JednaCecha.png");
     }
 
     private void trainTwoFeatures(Matrix inputMatrix, Matrix outputMatrix) throws FileNotFoundException {
-        train(inputMatrix, outputMatrix, "train_01.png", 0, 1);
-        train(inputMatrix, outputMatrix, "train_02.png", 0, 2);
-        train(inputMatrix, outputMatrix, "train_03.png", 0, 3);
-        train(inputMatrix, outputMatrix, "train_12.png", 1, 2);
-        train(inputMatrix, outputMatrix, "train_13.png", 1, 3);
-        train(inputMatrix, outputMatrix, "train_23.png", 2, 3);
+        ErrorChart errorChart = new ErrorChart();
+        errorChart.addSeries(train(inputMatrix, outputMatrix, "Cechy 1 i 2", 0, 1));
+        errorChart.addSeries(train(inputMatrix, outputMatrix, "Cechy 1 i 3", 0, 2));
+        errorChart.addSeries(train(inputMatrix, outputMatrix, "Cechy 1 i 4", 0, 3));
+        errorChart.addSeries(train(inputMatrix, outputMatrix, "Cechy 2 i 3", 1, 2));
+        errorChart.addSeries(train(inputMatrix, outputMatrix, "Cechy 2 i 4", 1, 3));
+        errorChart.addSeries(train(inputMatrix, outputMatrix, "Cechy 3 i 4", 2, 3));
+        errorChart.generateChart("DwieCechy.png");
     }
 
     private void trainThreeFeatures(Matrix inputMatrix, Matrix outputMatrix) throws FileNotFoundException {
-        train(inputMatrix, outputMatrix, "train_012.png", 0, 1, 2);
-        train(inputMatrix, outputMatrix, "train_013.png", 0, 1, 3);
-        train(inputMatrix, outputMatrix, "train_023.png", 0, 2, 3);
-        train(inputMatrix, outputMatrix, "train_123.png", 1, 2, 3);
+        ErrorChart errorChart = new ErrorChart();
+        errorChart.addSeries(train(inputMatrix, outputMatrix, "Cechy 1,2,3", 0, 1, 2));
+        errorChart.addSeries(train(inputMatrix, outputMatrix, "Cechy 1,2,4", 0, 1, 3));
+        errorChart.addSeries(train(inputMatrix, outputMatrix, "Cechy 1,3,4", 0, 2, 3));
+        errorChart.addSeries(train(inputMatrix, outputMatrix, "Cechy 2,3,4", 1, 2, 3));
+        errorChart.generateChart("TrzyCechy.png");
     }
 
     private void trainFourFeatures(Matrix inputMatrix, Matrix outputMatrix) throws FileNotFoundException {
-        train(inputMatrix, outputMatrix, "train_0123.png", 0, 1, 2, 3);
+        ErrorChart errorChart = new ErrorChart();
+        errorChart.addSeries(train(inputMatrix, outputMatrix, "Cztery Cechy", 0, 1, 2, 3));
+        errorChart.generateChart("CzteryCechy.png");
     }
 
-    private void train(Matrix inputMatrix, Matrix outputMatrix, String outputName, int... indexes) throws FileNotFoundException {
+    private XYSeries train(Matrix inputMatrix, Matrix outputMatrix, String outputName, int... indexes) throws FileNotFoundException {
         inputMatrix = chooseParameters(inputMatrix, indexes);
-        NeuralNetwork nn = new NeuralNetwork(inputMatrix.columns(), outputMatrix.columns(), true,
-                new int[]{3}, 0.003, 0.9);
-        ErrorChart errorChart = new ErrorChart();
+        NeuralNetwork nn = new NeuralNetwork(inputMatrix.columns(), outputMatrix.columns(), false,
+                new int[]{20}, 0.003, 0.9);
+        //ErrorChart errorChart = new ErrorChart();
         XYSeries errorSeries = nn.train(inputMatrix, outputMatrix, 500, 0.01);
-        errorChart.addSeries(errorSeries);
-        errorChart.generateChart(outputName);
+        errorSeries.setKey(outputName);
+        //errorChart.addSeries(errorSeries);
+        //errorChart.generateChart(outputName);
 
         Matrix[] testMatrices = new FileUtils().loadDataFromSingleFile("classification_test.txt");
         System.out.println(outputName + " TEST: " + test(nn, chooseParameters(testMatrices[0], indexes), testMatrices[1]));
+        return errorSeries;
     }
 
 
