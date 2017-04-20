@@ -1,4 +1,6 @@
-import models.NeuralNetwork;
+package exercise1;
+
+import exercise1.models.NeuralNetwork;
 import org.jfree.data.xy.XYSeries;
 import org.la4j.Matrix;
 import utils.ErrorChart;

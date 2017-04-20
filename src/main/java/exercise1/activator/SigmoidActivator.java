@@ -1,4 +1,4 @@
-package activator;
+package exercise1.activator;
 
 import org.la4j.Matrix;
 

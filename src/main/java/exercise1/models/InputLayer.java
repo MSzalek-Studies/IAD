@@ -1,4 +1,4 @@
-package models;
+package exercise1.models;
 
 import org.la4j.Matrix;
 import utils.MatrixUtils;

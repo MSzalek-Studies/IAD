@@ -1,5 +1,7 @@
-import activator.LinearActivator;
-import models.NeuralNetwork;
+package exercise1;
+
+import exercise1.activator.LinearActivator;
+import exercise1.models.NeuralNetwork;
 import org.jfree.data.xy.XYSeries;
 import org.la4j.Matrix;
 import org.la4j.matrix.dense.Basic1DMatrix;
@@ -16,7 +18,7 @@ public class Approximation {
 
     public void performApproximation() {
         try {
-            Matrix[] matrices = new FileUtils().loadDataFromSingleFile("approximation_train_1.txt");
+            Matrix[] matrices = new FileUtils().loadDataFromSingleFileSupervised("approximation_train_1.txt");
             ErrorChart errorChart = new ErrorChart();
 
             NeuralNetwork nn = new NeuralNetwork(matrices[0].columns(), matrices[1].columns(), true,
@@ -26,7 +28,7 @@ public class Approximation {
             XYSeries errorSeries = nn.train(matrices[0], matrices[1], iterations, 0.01);
             errorChart.addSeries(errorSeries);
 
-            matrices = new FileUtils().loadDataFromSingleFile("approximation_train_2.txt");
+            matrices = new FileUtils().loadDataFromSingleFileSupervised("approximation_train_2.txt");
             errorSeries = nn.train(matrices[0], matrices[1], iterations, 0.01);
 
             XYSeries newSeries = new XYSeries("Seria1");
@@ -45,7 +47,7 @@ public class Approximation {
     }
 
     private void test(NeuralNetwork nn) throws FileNotFoundException {
-        Matrix[] matrices = new FileUtils().loadDataFromSingleFile("approximation_test.txt");
+        Matrix[] matrices = new FileUtils().loadDataFromSingleFileSupervised("approximation_test.txt");
         System.out.print("TEST: " + nn.test(matrices[0], matrices[1]));
     }
 

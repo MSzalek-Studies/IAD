@@ -1,4 +1,6 @@
-import models.NeuralNetwork;
+package exercise1;
+
+import exercise1.models.NeuralNetwork;
 import org.jfree.data.xy.XYSeries;
 import org.la4j.Matrix;
 import org.la4j.matrix.dense.Basic2DMatrix;
@@ -14,7 +16,7 @@ public class Classification {
 
     public void performClassification() {
         try {
-            Matrix[] matrices = new FileUtils().loadDataFromSingleFile("classification_train.txt");
+            Matrix[] matrices = new FileUtils().loadDataFromSingleFileSupervised("classification_train.txt");
             matrices[1] = unrollClassificationMatrix(matrices[1]);
 
             trainOneFeature(matrices[0], matrices[1]);
@@ -63,7 +65,7 @@ public class Classification {
         errorChart.addSeries(errorSeries);
         errorChart.generateChart(outputName);
 
-        Matrix[] testMatrices = new FileUtils().loadDataFromSingleFile("classification_test.txt");
+        Matrix[] testMatrices = new FileUtils().loadDataFromSingleFileSupervised("classification_test.txt");
         System.out.println(outputName + " TEST: " + test(nn, chooseParameters(testMatrices[0], indexes), testMatrices[1]));
     }
 

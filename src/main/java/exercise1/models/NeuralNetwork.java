@@ -1,7 +1,7 @@
-package models;
+package exercise1.models;
 
-import activator.Activator;
-import activator.SigmoidActivator;
+import exercise1.activator.Activator;
+import exercise1.activator.SigmoidActivator;
 import org.jfree.data.xy.XYSeries;
 import org.la4j.Matrix;
 import org.la4j.vector.dense.BasicVector;

@@ -1,6 +1,6 @@
-package models;
+package exercise1.models;
 
-import activator.Activator;
+import exercise1.activator.Activator;
 import org.la4j.Matrix;
 import org.la4j.matrix.dense.Basic2DMatrix;
 import org.la4j.matrix.functor.MatrixFunction;
