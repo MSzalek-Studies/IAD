@@ -64,14 +64,14 @@ public class DataSetChart {
         Shape shape1 = new Ellipse2D.Double(-inputDelta, -inputDelta, inputSize, inputSize);
         renderer.setSeriesShape(0, shape1);
         renderer.setSeriesPaint(0, Color.blue);
-        double neuronSize = 4;
+        double neuronSize = 8;
         double neuronDelta = neuronSize / 2.0;
         Shape shape2 = new Ellipse2D.Double(-neuronDelta, -neuronDelta, neuronSize, neuronSize);
         renderer.setSeriesShape(1, shape2);
         renderer.setSeriesPaint(1, Color.red);
 
         try {
-            ChartUtilities.saveChartAsJPEG(new File(filename), chart, 500, 300);
+            ChartUtilities.saveChartAsJPEG(new File(filename), chart, 1000, 800);
         } catch (IOException e) {
             System.err.println("Problem occurred creating chart.");
         }

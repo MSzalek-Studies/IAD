@@ -6,8 +6,9 @@ import org.la4j.matrix.dense.Basic2DMatrix;
 import org.la4j.vector.dense.BasicVector;
 import utils.DataSetChart;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
-import java.util.Random;
 
 /**
  * Created by marcinus on 20.04.17.
@@ -21,7 +22,7 @@ public class KMeans {
 
     public KMeans(Matrix inputMatrix, int k) {
         this.k = k;
-        initNeurons(inputMatrix, k);
+        neurons = new Utils().initNeurons(inputMatrix, k);
         this.inputs = inputMatrix;
         this.ids = new BasicVector(inputMatrix.rows());
     }
@@ -29,29 +30,24 @@ public class KMeans {
     public void perform(int maxIter) {
         double diff;
         int it = 0;
+        try {
+            org.apache.commons.io.FileUtils.deleteDirectory(new File("kmeans"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        new File("kmeans").mkdir();
         do {
             DataSetChart dataSetChart = new DataSetChart(2);
             dataSetChart.addEntries(0, inputs);
             dataSetChart.addEntries(1, neurons);
-            dataSetChart.generateChart("ex2kmeans.jpg");
+            dataSetChart.generateChart("kmeans" + File.separator + "ex2kmeans" + it + ".jpg");
             System.out.println("generating ex2kmeans" + it);
 
             updateIds();
             removeDeadNeurons();
             diff = updateNeurons();
-
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             it++;
         } while (diff > 0 && it < maxIter);
-        DataSetChart dataSetChart = new DataSetChart(2);
-        dataSetChart.addEntries(0, inputs);
-        dataSetChart.addEntries(1, neurons);
-        dataSetChart.generateChart("ex2kmeans.jpg");
-        System.out.println("generating ex2kmeans" + it);
     }
 
     private void removeDeadNeurons() {
@@ -124,19 +120,5 @@ public class KMeans {
 
     private double distance(double x1, double y1, double x2, double y2) {
         return Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2);
-    }
-
-    private void initNeurons(Matrix inputMatrix, int k) {
-        neurons = new Basic2DMatrix(k, 2);
-        double minXArg = inputMatrix.getColumn(0).min();
-        double maxXArg = inputMatrix.getColumn(0).max();
-        double minYArg = inputMatrix.getColumn(1).min();
-        double maxYArg = inputMatrix.getColumn(1).max();
-        for (int i = 0; i < k; i++) {
-            double x = new Random().nextDouble() * (maxXArg - minXArg) + minXArg;
-            double y = new Random().nextDouble() * (maxYArg - minYArg) + minYArg;
-            neurons.set(i, 0, x);
-            neurons.set(i, 1, y);
-        }
     }
 }
