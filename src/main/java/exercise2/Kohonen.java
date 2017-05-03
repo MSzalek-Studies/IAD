@@ -3,7 +3,6 @@ package exercise2;
 import com.sun.istack.internal.Nullable;
 import org.jfree.data.xy.XYSeries;
 import org.la4j.Matrix;
-import org.la4j.Vector;
 import utils.DataSetChart;
 import utils.ErrorChart;
 
@@ -21,7 +20,6 @@ public class Kohonen {
     int k;
     List<Point> neurons = new ArrayList<>();
     List<TrainPoint> points = new ArrayList<>();
-    Vector ids;
 
     class TrainPoint extends Point {
         Point neuron;
@@ -85,7 +83,6 @@ public class Kohonen {
                 removeDeadNeurons();
             }
             errorSeries.add(it, calculateError());
-            //diff = updateNeurons();
             it++;
         } while (diff > 0 && it < maxIter);
         errorChart.addSeries(errorSeries);
@@ -114,9 +111,11 @@ public class Kohonen {
                 p.neuron.y += diffY;
                 diff[0] += diffX + diffY;
             } else {
+                double sigmaSquared = neighbourRadius * neighbourRadius;
                 neurons.forEach(n -> {
-                    double diffX = gaussian(p.neuron, n, neighbourRadius) * learningRate * (p.x - n.x);
-                    double diffY = gaussian(p.neuron, n, neighbourRadius) * learningRate * (p.y - n.y);
+                    double gaussian = gaussian(p.neuron, n, sigmaSquared);
+                    double diffX = gaussian * learningRate * (p.x - n.x);
+                    double diffY = gaussian * learningRate * (p.y - n.y);
                     n.x += diffX;
                     n.y += diffY;
                     diff[0] += diffX + diffY;
@@ -132,8 +131,7 @@ public class Kohonen {
     }
 
     // return pdf(x) = standard Gaussian pdf
-    public double gaussian(Point center, Point point, double sigma) {
-        double sigmaSquared = sigma * sigma;
+    public double gaussian(Point center, Point point, double sigmaSquared) {
         double value = Math.exp(-((Math.pow(center.x - point.x, 2) / (2 * sigmaSquared)) + ((Math.pow(center.y - point.y, 2) / (2 * sigmaSquared)))));
         return value;
     }
