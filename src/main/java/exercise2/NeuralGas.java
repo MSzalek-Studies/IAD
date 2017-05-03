@@ -1,11 +1,8 @@
 package exercise2;
 
-import com.sun.istack.internal.Nullable;
-import org.jfree.data.xy.XYSeries;
 import org.la4j.Matrix;
 import org.la4j.Vector;
 import utils.DataSetChart;
-import utils.ErrorChart;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +13,7 @@ import java.util.stream.Collectors;
 /**
  * Created by marcinus on 26.04.17.
  */
-public class Kohonen {
+public class NeuralGas {
 
     int k;
     List<Point> neurons = new ArrayList<>();
@@ -45,7 +42,7 @@ public class Kohonen {
         }
     }
 
-    public Kohonen(Matrix inputMatrix, int k) {
+    public NeuralGas(Matrix inputMatrix, int k) {
         this.k = k;
         Matrix neurons = new Utils().initNeurons(inputMatrix, k);
         for (int i = 0; i < neurons.rows(); i++) {
@@ -56,12 +53,7 @@ public class Kohonen {
         }
     }
 
-    /**
-     * @param maxIter
-     * @param learningRate
-     * @param neighbourRadius jesli null to WTA, jesli nie null to WTM
-     */
-    public void perform(int maxIter, double learningRate, @Nullable Double neighbourRadius) {
+    public void perform(int maxIter, double learningRate) {
         double diff;
         int it = 0;
         try {
@@ -70,8 +62,6 @@ public class Kohonen {
             e.printStackTrace();
         }
         new File("kohonen").mkdir();
-        ErrorChart errorChart = new ErrorChart();
-        XYSeries errorSeries = new XYSeries("Bledy");
         do {
             DataSetChart dataSetChart = new DataSetChart(2);
             points.forEach(p -> dataSetChart.addEntry(0, p.x, p.y));
@@ -80,48 +70,30 @@ public class Kohonen {
             System.out.println("generating ex2kohonen" + it);
 
             setWinners();
-            diff = moveWinners(learningRate, neighbourRadius);
+            diff = moveWinners(learningRate);
             if (it > 5) {
                 removeDeadNeurons();
             }
-            errorSeries.add(it, calculateError());
             //diff = updateNeurons();
             it++;
         } while (diff > 0 && it < maxIter);
-        errorChart.addSeries(errorSeries);
-        errorChart.generateChart("kohonen" + File.separator + "errorchart.jpg");
     }
 
     private void removeDeadNeurons() {
         neurons.removeIf(n -> !points.stream().map(p -> p.neuron).collect(Collectors.toList()).contains(n));
     }
 
-    private double calculateError() {
-        return points.stream().mapToDouble(p -> distance(p.x, p.y, p.neuron.x, p.neuron.y)).average().getAsDouble();
-    }
-
-    private double distance(double x1, double y1, double x2, double y2) {
-        return Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2);
-    }
-
-    private double moveWinners(double learningRate, Double neighbourRadius) {
+    private double moveWinners(double learningRate) {
         double[] diff = {0};
         points.forEach(p -> {
-            if (neighbourRadius == null) {
-                double diffX = learningRate * (p.x - p.neuron.x);
-                double diffY = learningRate * (p.y - p.neuron.y);
-                p.neuron.x += diffX;
-                p.neuron.y += diffY;
+            neurons.forEach(n -> {
+                double diffX = gaussian(p.neuron, n, 0.01) * learningRate * (p.x - n.x);
+                double diffY = gaussian(p.neuron, n, 0.01) * learningRate * (p.y - n.y);
+                n.x += diffX;
+                n.y += diffY;
                 diff[0] += diffX + diffY;
-            } else {
-                neurons.forEach(n -> {
-                    double diffX = gaussian(p.neuron, n, neighbourRadius) * learningRate * (p.x - n.x);
-                    double diffY = gaussian(p.neuron, n, neighbourRadius) * learningRate * (p.y - n.y);
-                    n.x += diffX;
-                    n.y += diffY;
-                    diff[0] += diffX + diffY;
-                });
-            }
+            });
+
         });
         return Math.abs(diff[0]);
     }
@@ -132,8 +104,7 @@ public class Kohonen {
     }
 
     // return pdf(x) = standard Gaussian pdf
-    public double gaussian(Point center, Point point, double sigma) {
-        double sigmaSquared = sigma * sigma;
+    public double gaussian(Point center, Point point, double sigmaSquared) {
         double value = Math.exp(-((Math.pow(center.x - point.x, 2) / (2 * sigmaSquared)) + ((Math.pow(center.y - point.y, 2) / (2 * sigmaSquared)))));
         return value;
     }
