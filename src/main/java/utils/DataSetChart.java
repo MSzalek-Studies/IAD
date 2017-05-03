@@ -25,9 +25,8 @@ public class DataSetChart {
 
     public DataSetChart(int numLabels) {
         series = new XYSeries[numLabels];
-        for (int i = 0; i < numLabels; i++) {
-            series[i] = new XYSeries("label" + i);
-        }
+        series[0] = new XYSeries("Punkty wejściowe");
+        series[1] = new XYSeries("Neurony");
     }
 
     public void addEntries(int label, Matrix matrix) {

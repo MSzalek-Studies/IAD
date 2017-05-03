@@ -39,8 +39,9 @@ public class KMeans {
             e.printStackTrace();
         }
         ErrorChart errorChart = new ErrorChart();
-        XYSeries errorSeries = new XYSeries("Bledy");
+        XYSeries errorSeries = new XYSeries("Błędy");
         new File("kmeans").mkdir();
+        double error = 0;
         do {
             DataSetChart dataSetChart = new DataSetChart(2);
             dataSetChart.addEntries(0, inputs);
@@ -54,8 +55,11 @@ public class KMeans {
                 removeDeadNeurons();
             }
             it++;
-            errorSeries.add(it, calculateError());
+            error = calculateError();
+            errorSeries.add(it, error);
+
         } while (diff > 0 && it < maxIter);
+        System.out.println(error);
         errorChart.addSeries(errorSeries);
         errorChart.generateChart("kmeans" + File.separator + "error.jpg");
     }

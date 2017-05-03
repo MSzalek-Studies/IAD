@@ -69,7 +69,8 @@ public class Kohonen {
         }
         new File("kohonen").mkdir();
         ErrorChart errorChart = new ErrorChart();
-        XYSeries errorSeries = new XYSeries("Bledy");
+        XYSeries errorSeries = new XYSeries("Błędy");
+        double error = 0;
         do {
             DataSetChart dataSetChart = new DataSetChart(2);
             points.forEach(p -> dataSetChart.addEntry(0, p.x, p.y));
@@ -82,9 +83,11 @@ public class Kohonen {
             if (it > 5) {
                 removeDeadNeurons();
             }
-            errorSeries.add(it, calculateError());
+            error = calculateError();
+            errorSeries.add(it, error);
             it++;
         } while (diff > 0 && it < maxIter);
+        System.out.print(error);
         errorChart.addSeries(errorSeries);
         errorChart.generateChart("kohonen" + File.separator + "errorchart.jpg");
     }
