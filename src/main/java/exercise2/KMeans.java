@@ -1,10 +1,12 @@
 package exercise2;
 
+import org.jfree.data.xy.XYSeries;
 import org.la4j.Matrix;
 import org.la4j.Vector;
 import org.la4j.matrix.dense.Basic2DMatrix;
 import org.la4j.vector.dense.BasicVector;
 import utils.DataSetChart;
+import utils.ErrorChart;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +20,8 @@ public class KMeans {
     int k;
     Matrix neurons;
     Matrix inputs;
-    Vector ids;
+    Vector ids; //dla każdego punktu reprezentuje numer neurona, który go reprezentuje.
+    // Numer ten odwzorowuje indeks tego neurona w macierzy neurons
 
     public KMeans(Matrix inputMatrix, int k) {
         this.k = k;
@@ -35,6 +38,8 @@ public class KMeans {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        ErrorChart errorChart = new ErrorChart();
+        XYSeries errorSeries = new XYSeries("Bledy");
         new File("kmeans").mkdir();
         do {
             DataSetChart dataSetChart = new DataSetChart(2);
@@ -49,7 +54,23 @@ public class KMeans {
                 removeDeadNeurons();
             }
             it++;
+            errorSeries.add(it, calculateError());
         } while (diff > 0 && it < maxIter);
+        errorChart.addSeries(errorSeries);
+        errorChart.generateChart("kmeans" + File.separator + "error.jpg");
+    }
+
+    private double calculateError() {
+        double error = 0;
+        for (int i = 0; i < inputs.rows(); i++) {
+            double xPunktu = inputs.get(i, 0);
+            double yPunkty = inputs.get(i, 1);
+            double xNeuronu = neurons.get((int) ids.get(i), 0);
+            double yNeuronu = neurons.get((int) ids.get(i), 1);
+            double distance = distance(xPunktu, yPunkty, xNeuronu, yNeuronu);
+            error += distance;
+        }
+        return error / inputs.rows();
     }
 
     private void removeDeadNeurons() {
