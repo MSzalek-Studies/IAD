@@ -44,8 +44,10 @@ public class KMeans {
             System.out.println("generating ex2kmeans" + it);
 
             updateIds();
-            removeDeadNeurons();
             diff = updateNeurons();
+            if (it > 4) {
+                removeDeadNeurons();
+            }
             it++;
         } while (diff > 0 && it < maxIter);
     }

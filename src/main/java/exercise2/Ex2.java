@@ -15,12 +15,12 @@ public class Ex2 {
             Matrix input = new FileUtils().loadDataFromSingleFileUnsupervised("attract.txt");
             DataSetChart dataSetChart = new DataSetChart(2);
             dataSetChart.addEntries(0, input);
-            //KMeans kMeans = new KMeans(input, 500);
-            //kMeans.perform(100);
+//            KMeans kMeans = new KMeans(input, 500);
+//            kMeans.perform(100);
             //dataSetChart.addEntries(1, kMeans.neurons);
             //dataSetChart.generateChart("ex2data.jpg");
-            Kohonen kohonen = new Kohonen(input, 100);
-            kohonen.perform(500, 0.1);
+            Kohonen kohonen = new Kohonen(input, 500);
+            kohonen.perform(100, 0.1);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();

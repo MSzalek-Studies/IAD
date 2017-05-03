@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by marcinus on 26.04.17.
@@ -70,23 +71,27 @@ public class Kohonen {
 
             setWinners();
             diff = moveWinners(learningRate);
-            //removeDeadNeurons();
+            if (it > 5) {
+                removeDeadNeurons();
+            }
             //diff = updateNeurons();
             it++;
         } while (diff > 0 && it < maxIter);
+    }
+
+    private void removeDeadNeurons() {
+        neurons.removeIf(n -> !points.stream().map(p -> p.neuron).collect(Collectors.toList()).contains(n));
     }
 
     private double moveWinners(double learningRate) {
         double[] diff = {0};
         points.forEach(p -> {
             neurons.forEach(n -> {
-                double diffX = gaussian(p.neuron, n, 0.1) * learningRate * (p.x - p.neuron.x);
-                double diffY = gaussian(p.neuron, n, 0.1) * learningRate * (p.y - p.neuron.y);
+                double diffX = gaussian(p.neuron, n, 0.01) * learningRate * (p.x - n.x);
+                double diffY = gaussian(p.neuron, n, 0.01) * learningRate * (p.y - n.y);
                 n.x += diffX;
                 n.y += diffY;
-                if (diff[0] < 2) {
-                    diff[0] += diffX + diffY;
-                }
+                diff[0] += diffX + diffY;
             });
 
         });
@@ -99,7 +104,7 @@ public class Kohonen {
     }
 
     // return pdf(x) = standard Gaussian pdf
-    public static double gaussian(Point center, Point point, double sigmaSquared) {
+    public double gaussian(Point center, Point point, double sigmaSquared) {
         double value = Math.exp(-((Math.pow(center.x - point.x, 2) / (2 * sigmaSquared)) + ((Math.pow(center.y - point.y, 2) / (2 * sigmaSquared)))));
         return value;
     }
