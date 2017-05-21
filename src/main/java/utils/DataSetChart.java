@@ -58,7 +58,7 @@ public class DataSetChart {
 
         XYPlot xyPlot = chart.getXYPlot();
         XYItemRenderer renderer = xyPlot.getRenderer();
-        double inputSize = 0.5;
+        double inputSize = 5;
         double inputDelta = inputSize / 2.0;
         Shape shape1 = new Ellipse2D.Double(-inputDelta, -inputDelta, inputSize, inputSize);
         renderer.setSeriesShape(0, shape1);
