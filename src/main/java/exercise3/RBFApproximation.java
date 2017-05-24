@@ -72,6 +72,7 @@ public class RBFApproximation {
                 }
             }).sum(); //TODO: dzielic przez 2?
             series.add(it, cost);
+            System.out.println(cost);
         }
         errorChart.addSeries(series);
         errorChart.generateChart("nazwaaa.png");
